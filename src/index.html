@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
+  <div id="container">
     <nav id="sidebar">
       <button type="button" id="add-task-btn">Add Task</button>
       <button type="button" id="add-project-btn">Add Project</button>
@@ -21,7 +24,53 @@
         <button type="button">Project 2</button>
       </div>
     </nav>
+    <main>
     <h1>To-Do List</h1>
+    </main>
+    <dialog id="add-task-dialog">
+      <h1>Add Task</h1>
+      <form method="dialog" id="add-task-form">
+        <div>
+          <label for="task-title">Title</label>
+          <input type="text" name="title" id="task-title" placeholder="Enter task here" autofocus />
+        </div>
+        <div>
+          <label for="task-due-date">Due Date</label>
+          <input type="date" id="task-due-date" name="due-date" />
+        </div>
+        <div>
+          <select name="priority" id="task-priority">
+            <option value="1">Priority 1</option>
+            <option value="2">Priority 2</option>
+            <option value="3">Priority 3</option>
+            <option value="4" selected>Priority 4</option>
+          </select>
+        </div>
+        <div>
+          <label for="task-notes">Notes</label>
+          <textarea name="notes" id="task-notes" placeholder="Enter your notes here"></textarea>
+        </div>
+        <div>
+          <button type="submit">Add</button>
+          <button type="button" id="close-task-dialog-btn">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="add-project-dialog">
+      <h1>Add Project</h1>
+      <form method="dialog" id="add-project-form">
+        <div>
+          <label for="project-title">Title</label>
+          <input type="text" name="project" id="project-title" placeholder="My project"/>
+        </div>
+        <div>
+          <button type="submit">Add</button>
+          <button type="button" id="close-project-dialog-btn">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
     <script src="./src/main.js"></script>
 </body>
+
 </html>
