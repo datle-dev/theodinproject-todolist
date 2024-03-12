@@ -115,14 +115,42 @@ const Todo = (function() {
         StoreLocal.storeProjects(allProjectsObject);
     }
 
+    const deleteTask = (taskID) => {
+        let taskArray = getTasks();
+        let deleteIndex = taskArray.findIndex((task) => task.getID() === taskID)
+        console.log(deleteIndex);
+        console.log(taskArray[deleteIndex].getObject());
+        taskArray.splice(deleteIndex, 1);
+        
+        // taskArray.push(newTask);
+        const allTasksObject = convertTaskArrayToObject(taskArray);
+        StoreLocal.storeTasks(allTasksObject);
+    };
+
+    const toggleTaskDone = (taskID) => {
+        let taskArray = getTasks();
+        let toggleIndex = taskArray.findIndex((task) => task.getID() === taskID)
+        taskArray[toggleIndex].switchDone();
+        const allTasksObject = convertTaskArrayToObject(taskArray);
+        StoreLocal.storeTasks(allTasksObject);
+    }   
+
     return {
         addTask,
         addProject,
+        getTasks,
+        getProjects,
+        deleteTask,
+        toggleTaskDone,
     }
 
 })();
 
 const ScreenController = (function() {
+    let currentBoard = 'general';
+
+    const currentBoardHeading = document.querySelector('#current-board');
+
     const addTaskBtn = document.querySelector('#add-task-btn')
     const addTaskDialog = document.querySelector('#add-task-dialog')
     const addTaskForm = document.querySelector('#add-task-form');
@@ -132,6 +160,13 @@ const ScreenController = (function() {
     const addProjectDialog = document.querySelector('#add-project-dialog')
     const addProjectForm = document.querySelector('#add-project-form');
     const closeProjectDialogBtn = document.querySelector('#close-project-dialog-btn');
+
+    const taskBoard = document.querySelector('#task-board');
+    const projectBoard = document.querySelector('#project-board');
+
+    const generalBtn = document.querySelector('#general-btn')
+    const todayBtn = document.querySelector('#today-btn')
+    const upcomingBtn = document.querySelector('#upcoming-btn')
 
     const initScreen = () => {
         addTaskBtn.addEventListener('click', () => {
@@ -159,8 +194,9 @@ const ScreenController = (function() {
             console.log(dueDate.value);
             console.log(priority.value);
             console.log(notes.value);
-    
+
             Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
+            updateScreen(currentBoard);
 
             addTaskDialog.close();
         }
@@ -175,6 +211,7 @@ const ScreenController = (function() {
             console.log(title.value);
 
             Todo.addProject(title.value);
+            updateScreen(currentBoard);
 
             addProjectDialog.close();
         }
@@ -188,10 +225,186 @@ const ScreenController = (function() {
             addProjectDialog.close();
             console.log('closed project dialog');
         });
+
+        generalBtn.addEventListener('click', () => {
+            currentBoard = 'general';
+            updateScreen(currentBoard);
+        })
+        
+        todayBtn.addEventListener('click', () => {
+            currentBoard = 'today';
+            updateScreen(currentBoard);
+        })
+
+        upcomingBtn.addEventListener('click', () => {
+            currentBoard = 'upcoming';
+            updateScreen(currentBoard);
+        })
+
+        // default page on load is general folder
+        updateScreen(currentBoard);
+
     };
 
-    const updateScreen = () => {
+    const clearTaskProjectBoards = () => {
+        while (taskBoard.firstChild) {
+            taskBoard.removeChild(taskBoard.firstChild);
+        }
+        while (projectBoard.firstChild) {
+            projectBoard.removeChild(projectBoard.firstChild);
+        }
+    };
 
+    const getFilteredTaskArray = (taskArray, board) => {
+        let filteredTaskArray;
+        switch (board) {
+            case 'general':
+                filteredTaskArray = taskArray
+                break;
+            case 'today':
+                filteredTaskArray = taskArray.filter((task) => (
+                    isToday(parse(task.getDueDate(), 'yyyy-MM-dd', new Date()))
+                ));
+                break;
+            case 'upcoming':
+                filteredTaskArray = taskArray.filter((task) => (
+                    isFuture(parse(task.getDueDate(), 'yyyy-MM-dd', new Date()))
+                ));
+                break;
+        }
+        return filteredTaskArray;
+    };
+
+    const updateScreen = (board) => {
+        clearTaskProjectBoards();
+
+        let taskArray = getFilteredTaskArray(Todo.getTasks(), board);
+        let projectArray = Todo.getProjects();
+
+        currentBoardHeading.innerText = board.charAt(0).toUpperCase() + board.slice(1);
+
+        for (let task of taskArray) {
+            const taskArticle = document.createElement('article');
+            const taskTitle = document.createElement('p');
+            const taskDueDate = document.createElement('p');
+            const taskPriority = document.createElement('p');
+            const taskNotes = document.createElement('p');
+
+            const taskDone = document.createElement('button');
+            const taskEdit = document.createElement('button');
+            const taskArchive = document.createElement('button');
+            const taskDelete = document.createElement('button');
+            
+            const taskDoneIncompleteImg = document.createElement('img');
+            const taskDoneCompleteImg = document.createElement('img');
+            const taskEditImg = document.createElement('img');
+            const taskArchiveImg = document.createElement('img');
+            const taskDeleteImg = document.createElement('img');
+
+            taskDoneIncompleteImg.src = circleIcon;
+            taskDoneCompleteImg.src = checkCircleIcon;
+
+            taskDoneIncompleteImg.alt = 'incomplete task';
+            taskDoneCompleteImg.alt = 'complete task';
+
+            taskEditImg.src = pencilIcon;
+            taskArchiveImg.src = archiveIcon;
+            taskDeleteImg.src = trashIcon;
+
+            taskEditImg.alt = 'edit';
+            taskArchiveImg.alt = 'archive';
+            taskDeleteImg.alt = 'delete';
+
+
+
+            taskArticle.classList.add('task-board-item');
+
+            switch (task.getPriority()) {
+
+                case '1':
+                    taskArticle.classList.add('priority-1-task')
+                    break;
+                case '2':
+                    taskArticle.classList.add('priority-2-task')
+                    break;
+                case '3':
+                    taskArticle.classList.add('priority-3-task')
+                    break;
+            }
+
+            taskTitle.innerText = task.getTitle();
+            taskDueDate.innerText = task.getDueDate();
+            taskPriority.innerText = task.getPriority();
+            taskNotes.innerText = task.getNotes();
+
+            if (task.checkIsDone()) {
+                taskDone.appendChild(taskDoneCompleteImg);
+            } else {
+                taskDone.appendChild(taskDoneIncompleteImg);
+            }
+
+            taskEdit.appendChild(taskEditImg);
+            taskArchive.appendChild(taskArchiveImg);
+            taskDelete.appendChild(taskDeleteImg);
+
+
+
+            taskArticle.appendChild(taskDone);
+            taskArticle.appendChild(taskTitle);
+            taskArticle.appendChild(taskDueDate);
+            // taskArticle.appendChild(taskPriority);
+            // taskArticle.appendChild(taskNotes);
+            taskArticle.appendChild(taskEdit);
+            taskArticle.appendChild(taskArchive);
+            taskArticle.appendChild(taskDelete);
+
+            taskArticle.setAttribute('task-id', task.getID());
+            taskArticle.setAttribute('task-is-done', task.checkIsDone());
+
+            taskBoard.appendChild(taskArticle);
+
+            taskDelete.addEventListener('click', (e) => {
+                // target is button
+
+                // get parent article regardless of whether img or button is clicked
+                // console.log(e.currentTarget);
+                
+                let targetArticle = e.currentTarget;
+                while (targetArticle.tagName.toLowerCase() !== 'article') {
+                    targetArticle = targetArticle.parentNode;
+                }
+                console.log(targetArticle);
+
+                console.log(targetArticle.getAttribute('task-id'));
+
+                Todo.deleteTask(targetArticle.getAttribute('task-id'));
+
+                updateScreen(currentBoard);
+            });
+
+            taskDone.addEventListener('click', (e) => {
+                // let markDoneBtn = e.currentTarget;
+                let targetArticle = e.currentTarget;
+                while (targetArticle.tagName.toLowerCase() !== 'article') {
+                    targetArticle = targetArticle.parentNode;
+                }
+
+                Todo.toggleTaskDone(targetArticle.getAttribute('task-id'));
+
+                updateScreen(currentBoard);
+            })
+
+        }
+
+        for (let project of projectArray) {
+            const projectBtn = document.createElement('button');
+
+            projectBtn.classList.add('project-board-item');
+            projectBtn.setAttribute('type', 'button');
+            projectBtn.innerText = project.getTitle();
+
+            projectBoard.appendChild(projectBtn)
+        }
     };
 
     initScreen();
