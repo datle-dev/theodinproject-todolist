@@ -1,7 +1,6 @@
-const Project = function (title, idNum = null) {
+const Project = function (title, taskIDs = [], idNum = null) {
 
     let id;
-    let taskIDs = [];
 
     if (idNum !== null) {
         id = idNum;
