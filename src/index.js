@@ -63,6 +63,7 @@ const Todo = (function() {
             projectArray.push(
                 Project(
                     allProjectsObject[key].title,
+                    allProjectsObject[key].taskIDs,
                     key
                 )
             );
@@ -74,11 +75,11 @@ const Todo = (function() {
         let taskArray = [];
         let allTasksObject;
         if (StoreLocal.checkTasksExist()) {
-            console.log('retrieving existing tasks');
+            // console.log('retrieving existing tasks');
             allTasksObject = StoreLocal.retrieveTasks();
             taskArray = convertTaskObjectToArray(allTasksObject);
         } else {
-            console.log('no existing tasks');
+            // console.log('no existing tasks');
         }
         return taskArray;
     };
@@ -95,19 +96,19 @@ const Todo = (function() {
         let projectArray = [];
         let allProjectsObject;
         if (StoreLocal.checkProjectsExist()) {
-            console.log('retrieving existing projects');
+            // console.log('retrieving existing projects');
             allProjectsObject = StoreLocal.retrieveProjects();
             projectArray = convertProjectObjectToArray(allProjectsObject);
-            console.log(allProjectsObject);
+            // console.log(allProjectsObject);
         } else {
-            console.log('no existing projects');
+            // console.log('no existing projects');
         }
-        console.log(projectArray);
+        // console.log(projectArray);
         return projectArray;
     }
 
     const addProject = (title) => {
-        console.log('adding project');
+        // console.log('adding project');
         let projectArray = getProjects();
         const newProject = Project(title);
         projectArray.push(newProject);
@@ -115,14 +116,43 @@ const Todo = (function() {
         StoreLocal.storeProjects(allProjectsObject);
     }
 
+    const addTaskToProject = (projectID, title, dueDate, priority, notes) => {
+        // below is same as addTask(), but need to intercept creation of newTask variable
+        // so we can run getID() on it for adding to the given project's contained tasks
+        let taskArray = getTasks();
+        const newTask = Task(title, dueDate, priority, notes, false, false);
+        taskArray.push(newTask);
+        const allTasksObject = convertTaskArrayToObject(taskArray);
+        StoreLocal.storeTasks(allTasksObject);
+
+        let projectArray = getProjects();
+        const projectIndex = projectArray.findIndex((project) => project.getID() === projectID)
+        projectArray[projectIndex].addTaskID(newTask.getID());
+        const allProjectsObject = convertProjectArrayToObject(projectArray);
+        StoreLocal.storeProjects(allProjectsObject);
+    };
+
+    const checkTaskInProject = (projectID, taskID) => {
+        // console.log(`project id checkTaskInProject: ${projectID}`);
+        // console.log(`task id: ${taskID}`);
+
+
+        let projectArray = getProjects();
+        // console.log(projectArray.map((project) => project.getObject()));
+        const projectIndex = projectArray.findIndex((project) => project.getID() === projectID);
+        // console.log(`project index: ${projectIndex}`)
+        // console.log(projectArray[projectIndex]);
+        const projectTasks = projectArray[projectIndex].getTaskIDs();
+        // console.log(`project tasks: ${projectTasks}`);
+        return projectTasks.includes(taskID);
+
+        // return false;
+    }
+
     const deleteTask = (taskID) => {
         let taskArray = getTasks();
         let deleteIndex = taskArray.findIndex((task) => task.getID() === taskID)
-        console.log(deleteIndex);
-        console.log(taskArray[deleteIndex].getObject());
         taskArray.splice(deleteIndex, 1);
-        
-        // taskArray.push(newTask);
         const allTasksObject = convertTaskArrayToObject(taskArray);
         StoreLocal.storeTasks(allTasksObject);
     };
@@ -138,10 +168,12 @@ const Todo = (function() {
     return {
         addTask,
         addProject,
+        addTaskToProject,
         getTasks,
         getProjects,
         deleteTask,
         toggleTaskDone,
+        checkTaskInProject,
     }
 
 })();
@@ -171,32 +203,43 @@ const ScreenController = (function() {
     const initScreen = () => {
         addTaskBtn.addEventListener('click', () => {
             addTaskDialog.showModal();
-            console.log('opened task dialog');
+            // console.log('opened task dialog');
         });
     
         addProjectBtn.addEventListener('click', () => {
             addProjectDialog.showModal();
-            console.log('opened project dialog');
+            // console.log('opened project dialog');
         })
     
     
         addTaskForm.onsubmit = (e) => {
             e.preventDefault();
     
-            console.log('submitted task form');
+            // console.log('submitted task form');
     
             let title = document.querySelector('#task-title');
             let dueDate = document.querySelector('#task-due-date');
             let priority = document.querySelector('#task-priority');
             let notes = document.querySelector('#task-notes');
     
-            console.log(title.value);
-            console.log(dueDate.value);
-            console.log(priority.value);
-            console.log(notes.value);
+            // console.log(title.value);
+            // console.log(dueDate.value);
+            // console.log(priority.value);
+            // console.log(notes.value);
 
-            Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
-            updateScreen(currentBoard);
+            
+            let currentBoardProjectID = taskBoard.getAttribute('project-id');
+
+            if (currentBoard !== 'general' && currentBoard !== 'today' && currentBoard !== 'upcoming') {
+                console.log('adding task to project')
+                console.log(`project id from board${currentBoardProjectID}`);
+                Todo.addTaskToProject(currentBoardProjectID, title.value, dueDate.value, priority.value, notes.value);
+            } else {
+                Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
+            }
+         
+
+            updateScreen(currentBoard, currentBoardProjectID );
 
             addTaskDialog.close();
         }
@@ -204,11 +247,11 @@ const ScreenController = (function() {
         addProjectForm.onsubmit = (e) => {
             e.preventDefault();
     
-            console.log('submitted project form');
+            // console.log('submitted project form');
     
             let title = document.querySelector('#project-title');
     
-            console.log(title.value);
+            // console.log(title.value);
 
             Todo.addProject(title.value);
             updateScreen(currentBoard);
@@ -218,12 +261,12 @@ const ScreenController = (function() {
     
         closeTaskDialogBtn.addEventListener('click', () => {
             addTaskDialog.close();
-            console.log('closed task dialog');
+            // console.log('closed task dialog');
         });
     
         closeProjectDialogBtn.addEventListener('click', () => {
             addProjectDialog.close();
-            console.log('closed project dialog');
+            // console.log('closed project dialog');
         });
 
         generalBtn.addEventListener('click', () => {
@@ -255,7 +298,7 @@ const ScreenController = (function() {
         }
     };
 
-    const getFilteredTaskArray = (taskArray, board) => {
+    const getFilteredTaskArray = (taskArray, board, projectID) => {
         let filteredTaskArray;
         switch (board) {
             case 'general':
@@ -271,17 +314,26 @@ const ScreenController = (function() {
                     isFuture(parse(task.getDueDate(), 'yyyy-MM-dd', new Date()))
                 ));
                 break;
+            default:
+                filteredTaskArray = taskArray.filter((task) => (
+                    Todo.checkTaskInProject(projectID, task.getID())
+                ));
         }
+        console.log(`filtered task array: ${filteredTaskArray}`);
         return filteredTaskArray;
     };
 
-    const updateScreen = (board) => {
+    const updateScreen = (board, projectID = '') => {
+        // console.log(`project id: ${projectID}`);
         clearTaskProjectBoards();
 
-        let taskArray = getFilteredTaskArray(Todo.getTasks(), board);
+        let taskArray = getFilteredTaskArray(Todo.getTasks(), board, projectID);
         let projectArray = Todo.getProjects();
 
         currentBoardHeading.innerText = board.charAt(0).toUpperCase() + board.slice(1);
+        taskBoard.setAttribute('project-id', projectID);
+
+
 
         for (let task of taskArray) {
             const taskArticle = document.createElement('article');
@@ -363,6 +415,8 @@ const ScreenController = (function() {
 
             taskBoard.appendChild(taskArticle);
 
+            
+
             taskDelete.addEventListener('click', (e) => {
                 // target is button
 
@@ -373,13 +427,13 @@ const ScreenController = (function() {
                 while (targetArticle.tagName.toLowerCase() !== 'article') {
                     targetArticle = targetArticle.parentNode;
                 }
-                console.log(targetArticle);
+                // console.log(targetArticle);
 
-                console.log(targetArticle.getAttribute('task-id'));
+                // console.log(targetArticle.getAttribute('task-id'));
 
                 Todo.deleteTask(targetArticle.getAttribute('task-id'));
 
-                updateScreen(currentBoard);
+                updateScreen(currentBoard, projectID);
             });
 
             taskDone.addEventListener('click', (e) => {
@@ -391,7 +445,7 @@ const ScreenController = (function() {
 
                 Todo.toggleTaskDone(targetArticle.getAttribute('task-id'));
 
-                updateScreen(currentBoard);
+                updateScreen(currentBoard, projectID);
             })
 
         }
@@ -401,7 +455,13 @@ const ScreenController = (function() {
 
             projectBtn.classList.add('project-board-item');
             projectBtn.setAttribute('type', 'button');
+            projectBtn.setAttribute('project-id', project.getID());
             projectBtn.innerText = project.getTitle();
+
+            projectBtn.addEventListener('click', () => {
+                currentBoard = project.getTitle();
+                updateScreen(currentBoard, project.getID());
+            });
 
             projectBoard.appendChild(projectBtn)
         }
