@@ -1,4 +1,4 @@
-const Project = function (title, tasks = []) {
+const Project = function (title, taskIDs = []) {
 
     const getTitle = () => {
         return title;
@@ -8,25 +8,24 @@ const Project = function (title, tasks = []) {
         title = newTitle;
     };
 
-    const getTasks = () => {
-        return tasks;
+    const getTaskIDs = () => {
+        return taskIDs;
     };
 
-    const addTask = (newTask) => {
-        tasks.push(newTask);
+    const addTaskID = (newTaskID) => {
+        taskIDs.push(newTaskID);
     };
 
-    const removeTaskAtIndex = (index) => {
-        tasks.splice(index, 1);
+    const removeTaskIDAtIndex = (index) => {
+        taskIDs.splice(index, 1);
     };
-
 
     return {
         getTitle,
         setTitle,
-        getTasks,
-        addTask,
-        removeTaskAtIndex,
+        getTaskIDs,
+        addTaskID,
+        removeTaskIDAtIndex,
     }
 }
 
