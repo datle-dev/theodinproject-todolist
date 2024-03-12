@@ -38,6 +38,8 @@ const Todo = (function() {
                     allTasksObject[key].dueDate,
                     allTasksObject[key].priority,
                     allTasksObject[key].notes,
+                    allTasksObject[key].isDone,
+                    allTasksObject[key].isArchived,
                     key
                 )
             );
@@ -83,7 +85,7 @@ const Todo = (function() {
 
     const addTask = (title, dueDate, priority, notes) => {
         let taskArray = getTasks();
-        const newTask = Task(title, dueDate, priority, notes);
+        const newTask = Task(title, dueDate, priority, notes, false, false);
         taskArray.push(newTask);
         const allTasksObject = convertTaskArrayToObject(taskArray);
         StoreLocal.storeTasks(allTasksObject);
