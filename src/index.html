@@ -4,28 +4,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
   <title>Document</title>
 </head>
 
 <body>
   <div id="container">
     <nav id="sidebar">
-      <button type="button" id="add-task-btn">Add Task</button>
-      <button type="button" id="add-project-btn">Add Project</button>
-      <div>
+      <h1>To-Do List</h1>
+      <div id="sidebar-folders">
         <button type="button">Inbox</button>
         <button type="button">Today</button>
         <button type="button">Upcoming</button>
         <button type="button">View All</button>
       </div>
-      <div>
+      <div id="sidebar-projects">
         <h2>Projects</h2>
-        <button type="button">Project 1</button>
-        <button type="button">Project 2</button>
+        <button type="button" id="add-project-btn">Add Project</button>
       </div>
     </nav>
     <main>
       <h1>To-Do List</h1>
+      <button type="button" id="add-task-btn">Add Task</button>
     </main>
     <dialog id="add-task-dialog">
       <h1>Add Task</h1>
