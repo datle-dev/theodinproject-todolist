@@ -1,5 +1,17 @@
-const Task = function (title, dueDate, priority, notes) {
+const Task = function (title, dueDate, priority, notes, idNum = null) {
     
+    let id;
+
+    if (idNum !== null) {
+        id = idNum;
+    } else {
+        id = crypto.randomUUID();
+    }
+
+    const getID = () => {
+        return id;
+    };
+
     const getTitle = () => {
         return title;
     };
@@ -32,7 +44,18 @@ const Task = function (title, dueDate, priority, notes) {
         notes = newNotes;
     };
     
+    const getObject = () => {
+        const taskObject = {
+            'title': title,
+            'dueDate': dueDate,
+            'priority': priority,
+            'notes': notes,
+        };
+        return taskObject;
+    };
+
     return {
+        getID,
         getTitle,
         getDueDate,
         getPriority,
@@ -41,6 +64,7 @@ const Task = function (title, dueDate, priority, notes) {
         setDueDate,
         setPriority,
         setNotes,
+        getObject,
     }
 };
 
