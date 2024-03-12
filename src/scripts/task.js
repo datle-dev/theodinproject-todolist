@@ -1,4 +1,4 @@
-const Task = function (title, dueDate, priority, notes, idNum = null) {
+const Task = function (title, dueDate, priority, notes, isDone, isArchived, idNum = null) {
     
     let id;
 
@@ -44,12 +44,26 @@ const Task = function (title, dueDate, priority, notes, idNum = null) {
         notes = newNotes;
     };
     
+    const checkIsDone = () => {
+        return isDone;
+    };
+
+    const switchDone = () => {
+        isDone = !isDone;
+    }
+
+    const checkIsArchived = () => {
+        return isArchived;
+    }
+
     const getObject = () => {
         const taskObject = {
             'title': title,
             'dueDate': dueDate,
             'priority': priority,
             'notes': notes,
+            'isDone': isDone,
+            'isArchived': isArchived,
         };
         return taskObject;
     };
@@ -65,6 +79,9 @@ const Task = function (title, dueDate, priority, notes, idNum = null) {
         setPriority,
         setNotes,
         getObject,
+        checkIsDone,
+        checkIsArchived,
+        switchDone,
     }
 };
 
