@@ -4,6 +4,14 @@ import Task from './scripts/task.js';
 import Project from './scripts/project.js';
 import StoreLocal from './scripts/store-local.js';
 
+import circleIcon from './assets/circle.svg';
+import checkCircleIcon from './assets/check-circle-fill.svg';
+import pencilIcon from './assets/pencil.svg';
+import archiveIcon from './assets/archive.svg';
+import trashIcon from './assets/trash.svg';
+
+import { format, isToday, isFuture, parse } from 'date-fns';
+
 const Todo = (function() {
 
     // converts an array to tasks created via the factory function Task() to
