@@ -7,7 +7,8 @@
     --gradient-left: #1CB5E0;
     --gradient-right: #000851;
     --bg-primary: rgba(255, 255, 255, 0.6);
-    --bg-secondary: rgba(255, 255, 255, 0.4)
+    --bg-secondary: rgba(255, 255, 255, 0.4);
+    --page-max-width: 960px;
 }
 
 input,
@@ -33,7 +34,7 @@ h1, h2 {
 }
 
 #container {
-    max-width: 960px;
+    max-width: var(--page-max-width);
     margin: 0 auto;
     display: grid;
     grid-template-rows: 100%;
@@ -58,4 +59,43 @@ h1, h2 {
 
 main {
     padding: 1rem;
+}
+
+#task-board {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-board-item {
+    background-color: var(--bg-primary);
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+#project-board {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-board-item {
+    background-color: aqua;
+}
+
+#sidebar-folders button,
+#sidebar-projects button {
+    text-align: left;
+}
+
+.priority-1-task {
+    border-left: 1rem solid red;
+}
+
+.priority-2-task {
+    border-left: 1rem solid yellow;
+}
+
+.priority-3-task {
+    border-left: 1rem solid green;
 }
