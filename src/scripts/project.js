@@ -1,4 +1,17 @@
-const Project = function (title, taskIDs = []) {
+const Project = function (title, idNum = null) {
+
+    let id;
+    let taskIDs = [];
+
+    if (idNum !== null) {
+        id = idNum;
+    } else {
+        id = crypto.randomUUID();
+    }
+
+    const getID = () => {
+        return id;
+    };
 
     const getTitle = () => {
         return title;
@@ -20,13 +33,23 @@ const Project = function (title, taskIDs = []) {
         taskIDs.splice(index, 1);
     };
 
+    const getObject = () => {
+        const projectObject = {
+            'title': title,
+            'taskIDs': taskIDs,
+        };
+        return projectObject;
+    }
+
     return {
+        getID,
         getTitle,
         setTitle,
         getTaskIDs,
         addTaskID,
         removeTaskIDAtIndex,
+        getObject,
     }
-}
+};
 
 export default Project;
