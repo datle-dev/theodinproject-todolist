@@ -8,6 +8,7 @@ import circleIcon from './assets/circle.svg';
 import checkCircleIcon from './assets/check-circle-fill.svg';
 import pencilIcon from './assets/pencil.svg';
 import archiveIcon from './assets/archive.svg';
+import undoIcon from './assets/arrow-counterclockwise.svg';
 import trashIcon from './assets/trash.svg';
 
 import { isToday, isFuture, parse } from 'date-fns';
@@ -345,6 +346,7 @@ const ScreenController = (function () {
             const taskDoneCompleteImg = document.createElement('img');
             const taskEditImg = document.createElement('img');
             const taskArchiveImg = document.createElement('img');
+            const taskArchiveUndoImg = document.createElement('img');
             const taskDeleteImg = document.createElement('img');
 
             taskDoneIncompleteImg.src = circleIcon;
@@ -355,13 +357,19 @@ const ScreenController = (function () {
 
             taskEditImg.src = pencilIcon;
             taskArchiveImg.src = archiveIcon;
+            taskArchiveUndoImg.src = undoIcon;
             taskDeleteImg.src = trashIcon;
 
             taskEditImg.alt = 'edit';
             taskArchiveImg.alt = 'archive';
+            taskArchiveUndoImg.alt = 'undo';
             taskDeleteImg.alt = 'delete';
 
             taskArticle.classList.add('task-board-item');
+
+            if (task.checkIsDone()) {
+                taskArticle.classList.add('task-done');
+            }
 
             switch (task.getPriority()) {
 
@@ -388,7 +396,11 @@ const ScreenController = (function () {
             }
 
             taskEdit.appendChild(taskEditImg);
-            taskArchive.appendChild(taskArchiveImg);
+            if (task.checkIsArchived()) {
+                taskArchive.appendChild(taskArchiveUndoImg);
+            } else {
+                taskArchive.appendChild(taskArchiveImg);
+            }
             taskDelete.appendChild(taskDeleteImg);
 
             taskArticle.appendChild(taskDone);
@@ -396,7 +408,11 @@ const ScreenController = (function () {
             taskArticle.appendChild(taskDueDate);
             // taskArticle.appendChild(taskPriority);
             // taskArticle.appendChild(taskNotes);
-            taskArticle.appendChild(taskEdit);
+            taskEdit.appendChild(taskEditImg);
+            if (!task.checkIsArchived() && !task.checkIsDone()) {
+                taskArticle.appendChild(taskEdit);
+            }
+            
             taskArticle.appendChild(taskArchive);
             taskArticle.appendChild(taskDelete);
 
