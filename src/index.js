@@ -410,13 +410,19 @@ const ScreenController = (function () {
             taskArticle.appendChild(taskDueDate);
             // taskArticle.appendChild(taskPriority);
             // taskArticle.appendChild(taskNotes);
+
+
             taskEdit.appendChild(taskEditImg);
             if (!task.checkIsArchived() && !task.checkIsDone()) {
-                taskArticle.appendChild(taskEdit);
+                taskActionsDiv.appendChild(taskEdit);
             }
             
-            taskArticle.appendChild(taskArchive);
-            taskArticle.appendChild(taskDelete);
+            taskActionsDiv.appendChild(taskArchive);
+            taskActionsDiv.appendChild(taskDelete);
+
+            taskActionsDiv.classList.add('task-actions');
+
+            taskArticle.appendChild(taskActionsDiv);
 
             taskArticle.setAttribute('task-id', task.getID());
             taskArticle.setAttribute('task-is-done', task.checkIsDone());
