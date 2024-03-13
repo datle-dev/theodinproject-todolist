@@ -208,21 +208,21 @@ const ScreenController = (function () {
             let notes = document.querySelector('#task-notes');
 
             let currentBoardProjectID = taskBoard.getAttribute('project-id');
-
+            
             if (currentBoard !== 'general' && currentBoard !== 'today' && currentBoard !== 'upcoming') {
                 Todo.addTaskToProject(currentBoardProjectID, title.value, dueDate.value, priority.value, notes.value);
             } else {
                 Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
             }
-
+            
             updateScreen(currentBoard, currentBoardProjectID);
-
+            
             addTaskDialog.close();
         }
-
+        
         addProjectForm.onsubmit = (e) => {
             e.preventDefault();
-
+            
             let title = document.querySelector('#project-title');
 
             Todo.addProject(title.value);
@@ -341,6 +341,8 @@ const ScreenController = (function () {
             const taskEdit = document.createElement('button');
             const taskArchive = document.createElement('button');
             const taskDelete = document.createElement('button');
+
+            const taskActionsDiv = document.createElement('div');
 
             const taskDoneIncompleteImg = document.createElement('img');
             const taskDoneCompleteImg = document.createElement('img');
