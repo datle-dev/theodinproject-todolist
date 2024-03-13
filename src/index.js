@@ -173,7 +173,7 @@ const ScreenController = (function () {
 
     const currentBoardHeading = document.querySelector('#current-board');
 
-    const addTaskBtn = document.querySelector('#add-task-btn')
+    
     const addTaskDialog = document.querySelector('#add-task-dialog')
     const addTaskForm = document.querySelector('#add-task-form');
     const closeTaskDialogBtn = document.querySelector('#close-task-dialog-btn');
@@ -183,6 +183,7 @@ const ScreenController = (function () {
     const addProjectForm = document.querySelector('#add-project-form');
     const closeProjectDialogBtn = document.querySelector('#close-project-dialog-btn');
 
+    const taskControls = document.querySelector('#task-controls');
     const taskBoard = document.querySelector('#task-board');
     const projectBoard = document.querySelector('#project-board');
 
@@ -192,9 +193,6 @@ const ScreenController = (function () {
     const archiveBtn = document.querySelector('#archive-btn')
 
     const initScreen = () => {
-        addTaskBtn.addEventListener('click', () => {
-            addTaskDialog.showModal();
-        });
 
         addProjectBtn.addEventListener('click', () => {
             addProjectDialog.showModal();
@@ -266,6 +264,10 @@ const ScreenController = (function () {
     };
 
     const clearTaskProjectBoards = () => {
+        if (taskControls.firstChild) {
+            taskControls.removeChild(taskControls.firstChild);
+        }
+
         while (taskBoard.firstChild) {
             taskBoard.removeChild(taskBoard.firstChild);
         }
@@ -314,6 +316,18 @@ const ScreenController = (function () {
 
         currentBoardHeading.innerText = board.charAt(0).toUpperCase() + board.slice(1);
         taskBoard.setAttribute('project-id', projectID);
+
+        if (board !== 'today' && board !== 'upcoming' && board !== 'archive') {
+            const addTaskBtn = document.createElement('button');
+            addTaskBtn.setAttribute('type', 'button');
+            addTaskBtn.id = 'add-task-button';
+            addTaskBtn.innerText = 'Add Task';
+            taskControls.appendChild(addTaskBtn);
+            
+            addTaskBtn.addEventListener('click', () => {
+                addTaskDialog.showModal();
+            });
+        }
 
         for (let task of taskArray) {
             const taskArticle = document.createElement('article');
