@@ -9,6 +9,7 @@
     --bg-primary: rgba(255, 255, 255, 0.6);
     --bg-secondary: rgba(255, 255, 255, 0.4);
     --page-max-width: 960px;
+    --text-secondary: rgba(0, 0, 0, 0.3);
 }
 
 input,
@@ -98,4 +99,9 @@ main {
 
 .priority-3-task {
     border-left: 1rem solid green;
+}
+
+.task-done {
+    color: var(--text-secondary);
+    text-decoration: line-through;
 }
