@@ -389,7 +389,6 @@ const ScreenController = (function () {
 
             taskTitle.innerText = task.getTitle();
             taskDueDate.innerText = task.getDueDate();
-            taskPriority.innerText = task.getPriority();
             taskNotes.innerText = task.getNotes();
 
             if (task.checkIsDone()) {
