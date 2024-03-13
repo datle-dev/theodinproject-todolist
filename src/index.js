@@ -146,6 +146,14 @@ const Todo = (function () {
         StoreLocal.storeTasks(allTasksObject);
     }
 
+    const archiveTask = (taskID) => {
+        let taskArray = getTasks();
+        let toggleIndex = taskArray.findIndex((task) => task.getID() === taskID)
+        taskArray[toggleIndex].switchArchived();
+        const allTasksObject = convertTaskArrayToObject(taskArray);
+        StoreLocal.storeTasks(allTasksObject);
+    }
+
     return {
         addTask,
         addProject,
@@ -155,6 +163,7 @@ const Todo = (function () {
         deleteTask,
         toggleTaskDone,
         checkTaskInProject,
+        archiveTask,
     }
 
 })();
@@ -180,6 +189,7 @@ const ScreenController = (function () {
     const generalBtn = document.querySelector('#general-btn')
     const todayBtn = document.querySelector('#today-btn')
     const upcomingBtn = document.querySelector('#upcoming-btn')
+    const archiveBtn = document.querySelector('#archive-btn')
 
     const initScreen = () => {
         addTaskBtn.addEventListener('click', () => {
@@ -189,7 +199,6 @@ const ScreenController = (function () {
         addProjectBtn.addEventListener('click', () => {
             addProjectDialog.showModal();
         })
-
 
         addTaskForm.onsubmit = (e) => {
             e.preventDefault();
@@ -202,8 +211,6 @@ const ScreenController = (function () {
             let currentBoardProjectID = taskBoard.getAttribute('project-id');
 
             if (currentBoard !== 'general' && currentBoard !== 'today' && currentBoard !== 'upcoming') {
-                console.log('adding task to project')
-                console.log(`project id from board${currentBoardProjectID}`);
                 Todo.addTaskToProject(currentBoardProjectID, title.value, dueDate.value, priority.value, notes.value);
             } else {
                 Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
@@ -248,6 +255,11 @@ const ScreenController = (function () {
             updateScreen(currentBoard);
         })
 
+        archiveBtn.addEventListener('click', () => {
+            currentBoard = 'archive';
+            updateScreen(currentBoard);
+        })
+
         // default page on load is general folder
         updateScreen(currentBoard);
 
@@ -266,16 +278,23 @@ const ScreenController = (function () {
         let filteredTaskArray;
         switch (board) {
             case 'general':
-                filteredTaskArray = taskArray
+                filteredTaskArray = taskArray.filter((task) => (
+                    !task.checkIsArchived()
+                ));
                 break;
             case 'today':
                 filteredTaskArray = taskArray.filter((task) => (
-                    isToday(parse(task.getDueDate(), 'yyyy-MM-dd', new Date()))
+                    isToday(parse(task.getDueDate(), 'yyyy-MM-dd', new Date())) && !task.checkIsArchived()
                 ));
                 break;
             case 'upcoming':
                 filteredTaskArray = taskArray.filter((task) => (
-                    isFuture(parse(task.getDueDate(), 'yyyy-MM-dd', new Date()))
+                    isFuture(parse(task.getDueDate(), 'yyyy-MM-dd', new Date())) && !task.checkIsArchived()
+                ));
+                break;
+            case 'archive':
+                filteredTaskArray = taskArray.filter((task) => (
+                    task.checkIsArchived()
                 ));
                 break;
             default:
@@ -369,6 +388,7 @@ const ScreenController = (function () {
 
             taskArticle.setAttribute('task-id', task.getID());
             taskArticle.setAttribute('task-is-done', task.checkIsDone());
+            taskArticle.setAttribute('task-archived', task.checkIsArchived());
 
             taskBoard.appendChild(taskArticle);
 
@@ -381,6 +401,19 @@ const ScreenController = (function () {
                 }
 
                 Todo.deleteTask(targetArticle.getAttribute('task-id'));
+
+                updateScreen(currentBoard, projectID);
+            });
+
+            taskArchive.addEventListener('click', (e) => {
+                // get parent article regardless of whether img or button is clicked
+                // console.log(e.currentTarget);
+                let targetArticle = e.currentTarget;
+                while (targetArticle.tagName.toLowerCase() !== 'article') {
+                    targetArticle = targetArticle.parentNode;
+                }
+
+                Todo.archiveTask(targetArticle.getAttribute('task-id'));
 
                 updateScreen(currentBoard, projectID);
             });
