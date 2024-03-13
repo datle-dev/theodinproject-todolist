@@ -56,6 +56,10 @@ const Task = function (title, dueDate, priority, notes, isDone, isArchived, idNu
         return isArchived;
     }
 
+    const switchArchived = () => {
+        isArchived = !isArchived;
+    }
+
     const getObject = () => {
         const taskObject = {
             'title': title,
@@ -82,6 +86,7 @@ const Task = function (title, dueDate, priority, notes, isDone, isArchived, idNu
         checkIsDone,
         checkIsArchived,
         switchDone,
+        switchArchived,
     }
 };
 
