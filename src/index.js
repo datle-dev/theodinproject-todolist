@@ -224,9 +224,10 @@ const ScreenController = (function () {
             e.preventDefault();
             
             let title = document.querySelector('#project-title');
-
+            let currentBoardProjectID = taskBoard.getAttribute('project-id');
+            
             Todo.addProject(title.value);
-            updateScreen(currentBoard);
+            updateScreen(currentBoard, currentBoardProjectID);
 
             addProjectDialog.close();
         }
