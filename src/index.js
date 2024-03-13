@@ -77,7 +77,6 @@ const Todo = (function () {
         if (StoreLocal.checkTasksExist()) {
             allTasksObject = StoreLocal.retrieveTasks();
             taskArray = convertTaskObjectToArray(allTasksObject);
-        } else {
         }
         return taskArray;
     };
@@ -96,7 +95,6 @@ const Todo = (function () {
         if (StoreLocal.checkProjectsExist()) {
             allProjectsObject = StoreLocal.retrieveProjects();
             projectArray = convertProjectObjectToArray(allProjectsObject);
-        } else {
         }
         return projectArray;
     }
