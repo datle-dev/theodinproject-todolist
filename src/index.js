@@ -4,6 +4,7 @@ import Task from './scripts/task.js';
 import Project from './scripts/project.js';
 import StoreLocal from './scripts/store-local.js';
 
+import plusIcon from './assets/plus.svg';
 import circleIcon from './assets/circle.svg';
 import checkCircleIcon from './assets/check-circle-fill.svg';
 import pencilIcon from './assets/pencil.svg';
@@ -193,6 +194,8 @@ const ScreenController = (function () {
     const addProjectForm = document.querySelector('#add-project-form');
     const closeProjectDialogBtn = document.querySelector('#close-project-dialog-btn');
 
+    const taskBoardHeader = document.querySelector('#task-board-header');
+    const projectControls = document.querySelector('#project-controls');
     const taskControls = document.querySelector('#task-controls');
     const taskBoard = document.querySelector('#task-board');
     const projectBoard = document.querySelector('#project-board');
@@ -203,6 +206,16 @@ const ScreenController = (function () {
     const archiveBtn = document.querySelector('#archive-btn')
 
     const initScreen = () => {
+
+        const plusIconImg = document.createElement('img');
+        const addProjectBtnText = document.createElement('p');
+
+        plusIconImg.src = plusIcon;
+        plusIconImg.alt = 'add project';
+        addProjectBtnText.innerText = 'Add Project';
+
+        addProjectBtn.appendChild(plusIconImg);
+        addProjectBtn.appendChild(addProjectBtnText);
 
         addProjectBtn.addEventListener('click', () => {
             addProjectDialog.showModal();
@@ -278,7 +291,9 @@ const ScreenController = (function () {
         if (taskControls.firstChild) {
             taskControls.removeChild(taskControls.firstChild);
         }
-
+        while (projectControls.firstChild) {
+            projectControls.removeChild(projectControls.firstChild);
+        }
         while (taskBoard.firstChild) {
             taskBoard.removeChild(taskBoard.firstChild);
         }
@@ -330,14 +345,45 @@ const ScreenController = (function () {
 
         if (board !== 'today' && board !== 'upcoming' && board !== 'archive') {
             const addTaskBtn = document.createElement('button');
+
+            const plusIconImg = document.createElement('img');
+            const addTaskBtnText = document.createElement('p');
+
+            plusIconImg.src = plusIcon;
+            plusIconImg.alt = 'add task';
+            addTaskBtnText.innerText = 'Add Task';
+
+            addTaskBtn.appendChild(plusIconImg);
+            addTaskBtn.appendChild(addTaskBtnText);
+            
             addTaskBtn.setAttribute('type', 'button');
-            addTaskBtn.id = 'add-task-button';
-            addTaskBtn.innerText = 'Add Task';
+            addTaskBtn.id = 'add-task-btn';
+
             taskControls.appendChild(addTaskBtn);
             
             addTaskBtn.addEventListener('click', () => {
                 addTaskDialog.showModal();
             });
+        }
+
+        if (board !== 'general' && board !== 'today' && board !== 'upcoming' && board !== 'archive') {
+            
+            const editProjectBtn = document.createElement('button');
+            const deleteProjectBtn = document.createElement('button');
+            const editProjectBtnImg = document.createElement('img');
+            const deleteProjectBtnImg = document.createElement('img');
+
+            editProjectBtnImg.src = pencilIcon;
+            editProjectBtnImg.alt = 'edit project';
+            deleteProjectBtnImg.src = trashIcon;
+            deleteProjectBtnImg.alt = 'delete project';
+
+            editProjectBtn.appendChild(editProjectBtnImg);
+            deleteProjectBtn.appendChild(deleteProjectBtnImg);
+
+            projectControls.appendChild(editProjectBtn);
+            projectControls.appendChild(deleteProjectBtn);
+        
         }
 
         for (let task of taskArray) {
@@ -417,10 +463,12 @@ const ScreenController = (function () {
             taskDelete.appendChild(taskDeleteImg);
 
             taskDueDate.classList.add('task-date');
-
+            taskNotes.classList.add('task-notes');
+            taskNotes.classList.add('none');
             taskLeftDiv.appendChild(taskDone);
             taskInfoDiv.appendChild(taskTitle);
             taskInfoDiv.appendChild(taskDueDate);
+            taskInfoDiv.appendChild(taskNotes);
 
             taskInfoDiv.classList.add('task-info');
 
@@ -429,7 +477,6 @@ const ScreenController = (function () {
 
             taskArticle.appendChild(taskLeftDiv);
             // taskArticle.appendChild(taskPriority);
-            // taskArticle.appendChild(taskNotes);
 
 
             taskEdit.appendChild(taskEditImg);
@@ -450,6 +497,10 @@ const ScreenController = (function () {
             taskArticle.setAttribute('task-archived', task.checkIsArchived());
 
             taskBoard.appendChild(taskArticle);
+
+            taskInfoDiv.addEventListener('click', (e) => {
+                taskNotes.classList.toggle('none');    
+            });
 
             taskDelete.addEventListener('click', (e) => {
                 // get parent article regardless of whether img or button is clicked
