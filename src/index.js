@@ -141,9 +141,9 @@ const Todo = (function () {
     };
     
     const deleteProject = (projectID) => {
-        let projectArray = [];
+        let projectArray = getProjects();
         let deleteIndex = projectArray.findIndex((project) => project.getID() === projectID)
-        projectArray.splaice(deleteIndex, 1);
+        projectArray.splice(deleteIndex, 1);
         const allProjectsObject = convertProjectArrayToObject(projectArray);
         StoreLocal.storeProjects(allProjectsObject);
     }
