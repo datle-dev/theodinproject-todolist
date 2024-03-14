@@ -352,6 +352,7 @@ const ScreenController = (function () {
             const taskArchive = document.createElement('button');
             const taskDelete = document.createElement('button');
 
+            const taskLeftDiv = document.createElement('div');
             const taskActionsDiv = document.createElement('div');
 
             const taskDoneIncompleteImg = document.createElement('img');
@@ -414,9 +415,13 @@ const ScreenController = (function () {
             }
             taskDelete.appendChild(taskDeleteImg);
 
-            taskArticle.appendChild(taskDone);
-            taskArticle.appendChild(taskTitle);
-            taskArticle.appendChild(taskDueDate);
+            taskLeftDiv.appendChild(taskDone);
+            taskLeftDiv.appendChild(taskTitle);
+            taskLeftDiv.appendChild(taskDueDate);
+
+            taskLeftDiv.classList.add('task-left');
+
+            taskArticle.appendChild(taskLeftDiv);
             // taskArticle.appendChild(taskPriority);
             // taskArticle.appendChild(taskNotes);
 
