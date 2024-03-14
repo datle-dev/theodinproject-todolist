@@ -378,11 +378,21 @@ const ScreenController = (function () {
             deleteProjectBtnImg.src = trashIcon;
             deleteProjectBtnImg.alt = 'delete project';
 
+            editProjectBtn.setAttribute('project-id', projectID);
+            deleteProjectBtn.setAttribute('project-id', projectID);
+
             editProjectBtn.appendChild(editProjectBtnImg);
             deleteProjectBtn.appendChild(deleteProjectBtnImg);
 
             projectControls.appendChild(editProjectBtn);
             projectControls.appendChild(deleteProjectBtn);
+
+            deleteProjectBtn.addEventListener('click', (e) => {
+                console.log('delete project');
+                console.log(e.currentTarget.getAttribute('project-id'));
+                Todo.deleteProject(e.currentTarget.getAttribute('project-id'));
+                updateScreen('general');
+            });
         
         }
 
