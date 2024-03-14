@@ -33,7 +33,7 @@ const Task = function (title, dueDate, priority, notes, isDone, isArchived, idNu
     };
 
     const setPriority = (newPriority) => {
-        prior = newPriority;
+        priority = newPriority;
     };
 
     const getNotes = () => {
