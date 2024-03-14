@@ -164,6 +164,43 @@ const Todo = (function () {
         StoreLocal.storeTasks(allTasksObject);
     }
 
+    const getTaskInfo = (taskID) => {
+        let taskArray = getTasks();
+        let toggleIndex = taskArray.findIndex((task) => task.getID() === taskID)
+        return [
+            taskArray[toggleIndex].getTitle(),
+            taskArray[toggleIndex].getDueDate(),
+            taskArray[toggleIndex].getPriority(),
+            taskArray[toggleIndex].getNotes(),
+        ];
+    }
+
+    const getProjectInfo = (projectID) => {
+        let projectArray = getProjects();
+        let projectIndex = projectArray.findIndex((project) => project.getID() === projectID)
+        return projectArray[projectIndex].getTitle();
+    }
+
+    const updateTask = (title, dueDate, priority, notes, taskID) => {
+        let taskArray = getTasks();
+        let updateIndex = taskArray.findIndex((task) => task.getID() === taskID)
+        taskArray[updateIndex].setTitle(title);
+        taskArray[updateIndex].setDueDate(dueDate);
+        taskArray[updateIndex].setPriority(priority);
+        taskArray[updateIndex].setNotes(notes);
+        const allTasksObject = convertTaskArrayToObject(taskArray);
+        StoreLocal.storeTasks(allTasksObject);
+    }
+
+    const updateProject = (title, projectID) => {
+        let projectArray = getProjects();
+        let updateIndex = projectArray.findIndex((project) => project.getID() === projectID)
+        projectArray[updateIndex].setTitle(title);
+        const allProjectsObject = convertProjectArrayToObject(projectArray);
+        StoreLocal.storeProjects(allProjectsObject);
+    }
+
+
     return {
         addTask,
         addProject,
@@ -175,6 +212,10 @@ const Todo = (function () {
         toggleTaskDone,
         checkTaskInProject,
         archiveTask,
+        getTaskInfo,
+        getProjectInfo,
+        updateTask,
+        updateProject,
     }
 
 })();
@@ -182,8 +223,12 @@ const Todo = (function () {
 const ScreenController = (function () {
     let currentBoard = 'general';
 
-    const currentBoardHeading = document.querySelector('#current-board');
+    let taskDialogMode = 'add';
+    let projectDialogMode = 'add';
 
+    let currentTaskID = '';
+
+    const currentBoardHeading = document.querySelector('#current-board');
     
     const addTaskDialog = document.querySelector('#add-task-dialog')
     const addTaskForm = document.querySelector('#add-task-form');
@@ -218,6 +263,20 @@ const ScreenController = (function () {
         addProjectBtn.appendChild(addProjectBtnText);
 
         addProjectBtn.addEventListener('click', () => {
+            const addProjectHeading = document.getElementById('project-dialog-heading');
+            const addProjectButtonsDiv = document.getElementById('project-dialog-buttons');
+
+            if (addProjectButtonsDiv.childElementCount > 1) {
+                addProjectButtonsDiv.removeChild(addProjectButtonsDiv.firstChild);
+            }
+
+            const addProjectDialogAddTaskBtn = document.createElement('button');
+            addProjectDialogAddTaskBtn.setAttribute('type', 'submit');
+
+            addProjectDialogAddTaskBtn.innerText = 'Add Project';
+            addProjectHeading.innerText = 'Add Project';
+
+            addProjectButtonsDiv.insertBefore(addProjectDialogAddTaskBtn, addProjectButtonsDiv.firstChild);
             addProjectDialog.showModal();
         })
 
@@ -229,12 +288,20 @@ const ScreenController = (function () {
             let priority = document.querySelector('#task-priority');
             let notes = document.querySelector('#task-notes');
 
+
             let currentBoardProjectID = taskBoard.getAttribute('project-id');
             
-            if (currentBoard !== 'general' && currentBoard !== 'today' && currentBoard !== 'upcoming') {
-                Todo.addTaskToProject(currentBoardProjectID, title.value, dueDate.value, priority.value, notes.value);
-            } else {
-                Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
+            console.log(`taskdialogmode: ${taskDialogMode}`);
+
+            if (taskDialogMode === 'add') {
+                if (currentBoard !== 'general' && currentBoard !== 'today' && currentBoard !== 'upcoming') {
+                    Todo.addTaskToProject(currentBoardProjectID, title.value, dueDate.value, priority.value, notes.value);
+                } else {
+                    Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
+                }
+            } else if (taskDialogMode === 'edit') {
+                console.log('updating task');
+                Todo.updateTask(title.value, dueDate.value, priority.value, notes.value, currentTaskID);
             }
             
             title.value = '';
@@ -242,30 +309,59 @@ const ScreenController = (function () {
             priority.selectedIndex = 3;
             notes.value = '';
 
+            taskDialogMode = 'add';
+
             updateScreen(currentBoard, currentBoardProjectID);
             
             addTaskDialog.close();
         }
-        
+
         addProjectForm.onsubmit = (e) => {
             e.preventDefault();
             
             let title = document.querySelector('#project-title');
             let currentBoardProjectID = taskBoard.getAttribute('project-id');
             
-            Todo.addProject(title.value);
-            updateScreen(currentBoard, currentBoardProjectID);
+            if (projectDialogMode === 'add') {
+                Todo.addProject(title.value);
+            } else if (projectDialogMode === 'edit') {
+                Todo.updateProject(title.value, currentBoardProjectID);
+            }
 
             title.value = '';
+
+            projectDialogMode = 'add';
+            
+            updateScreen(currentBoard, currentBoardProjectID);
 
             addProjectDialog.close();
         }
 
-        closeTaskDialogBtn.addEventListener('click', () => {
+        closeTaskDialogBtn.addEventListener('click', (e) => {
+            let title = document.querySelector('#task-title');
+            let dueDate = document.querySelector('#task-due-date');
+            let priority = document.querySelector('#task-priority');
+            let notes = document.querySelector('#task-notes');
+
+            title.value = '';
+            dueDate.value = '';
+            priority.selectedIndex = 3;
+            notes.value = '';
+
+            taskDialogMode = 'add';
+
             addTaskDialog.close();
         });
 
-        closeProjectDialogBtn.addEventListener('click', () => {
+        closeProjectDialogBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            let title = document.querySelector('#project-title');
+
+            title.value = '';
+
+            projectDialogMode = 'add';
+
             addProjectDialog.close();
         });
 
@@ -288,6 +384,9 @@ const ScreenController = (function () {
             currentBoard = 'archive';
             updateScreen(currentBoard);
         })
+
+        taskDialogMode = 'add';
+        projectDialogMode = 'add';
 
         // default page on load is general folder
         updateScreen(currentBoard);
@@ -350,6 +449,7 @@ const ScreenController = (function () {
         currentBoardHeading.innerText = board.charAt(0).toUpperCase() + board.slice(1);
         taskBoard.setAttribute('project-id', projectID);
 
+        // show button to add task only if it's general or a project
         if (board !== 'today' && board !== 'upcoming' && board !== 'archive') {
             const addTaskBtn = document.createElement('button');
 
@@ -368,11 +468,26 @@ const ScreenController = (function () {
 
             taskControls.appendChild(addTaskBtn);
             
-            addTaskBtn.addEventListener('click', () => {
+            addTaskBtn.addEventListener('click', (e) => {
+                                const addTaskHeading = document.getElementById('task-dialog-heading');
+                const addTaskButtonsDiv = document.getElementById('task-dialog-buttons');
+
+                if (addTaskButtonsDiv.childElementCount > 1) {
+                    addTaskButtonsDiv.removeChild(addTaskButtonsDiv.firstChild);
+                }
+
+                const addTaskDialogAddTaskBtn = document.createElement('button');
+                addTaskDialogAddTaskBtn.setAttribute('type', 'submit');
+
+                addTaskDialogAddTaskBtn.innerText = 'Add Task';
+                addTaskHeading.innerText = 'Add Task';
+
+                addTaskButtonsDiv.insertBefore(addTaskDialogAddTaskBtn, addTaskButtonsDiv.firstChild);
                 addTaskDialog.showModal();
             });
         }
 
+        // show project controls only if it's a project
         if (board !== 'general' && board !== 'today' && board !== 'upcoming' && board !== 'archive') {
             
             const editProjectBtn = document.createElement('button');
@@ -394,10 +509,34 @@ const ScreenController = (function () {
             projectControls.appendChild(editProjectBtn);
             projectControls.appendChild(deleteProjectBtn);
 
+            editProjectBtn.addEventListener('click', (e) => {
+                projectDialogMode = 'edit';
+
+                const editProjectHeading = document.getElementById('project-dialog-heading');
+                const editProjectButtonsDiv = document.getElementById('project-dialog-buttons');
+                const editProjectTitleInput = document.getElementById('project-title');
+
+                if (editProjectButtonsDiv.childElementCount > 1) {
+                    editProjectButtonsDiv.removeChild(editProjectButtonsDiv.firstChild);
+                }
+
+                const editProjectDialogAddTaskBtn = document.createElement('button');
+                editProjectDialogAddTaskBtn.setAttribute('type', 'submit');
+
+                editProjectDialogAddTaskBtn.innerText = 'Save Edits';
+                editProjectHeading.innerText = 'Edit Project';
+                console.log(`title of project: ${Todo.getProjectInfo(projectID)}`);
+                editProjectTitleInput.value = Todo.getProjectInfo(projectID);
+
+                editProjectButtonsDiv.insertBefore(editProjectDialogAddTaskBtn, editProjectButtonsDiv.firstChild);
+                addProjectDialog.showModal();
+            })
+
             deleteProjectBtn.addEventListener('click', (e) => {
                 console.log('delete project');
                 console.log(e.currentTarget.getAttribute('project-id'));
                 Todo.deleteProject(e.currentTarget.getAttribute('project-id'));
+                currentBoard = 'general';
                 updateScreen('general');
             });
         
@@ -500,6 +639,7 @@ const ScreenController = (function () {
             if (task.checkIsArchived() || task.checkIsDone()) {
                 taskEdit.classList.add('hidden');
             }
+            taskEdit.setAttribute('task-id', task.getID());
             taskActionsDiv.appendChild(taskEdit);
             
             taskActionsDiv.appendChild(taskArchive);
@@ -517,6 +657,42 @@ const ScreenController = (function () {
 
             taskInfoDiv.addEventListener('click', (e) => {
                 taskNotes.classList.toggle('none');    
+            });
+
+            taskEdit.addEventListener('click', (e) => {
+                taskDialogMode = 'edit';
+
+                currentTaskID = e.currentTarget.getAttribute('task-id');
+
+                const editTaskHeading = document.getElementById('task-dialog-heading');
+                const editTaskButtonsDiv = document.getElementById('task-dialog-buttons');
+                const editTaskTitleInput = document.getElementById('task-title');
+                const editTaskDueDate = document.getElementById('task-due-date');
+                const editTaskPriority = document.getElementById('task-priority');
+                const editTaskNotes = document.getElementById('task-notes');
+
+                if (editTaskButtonsDiv.childElementCount > 1) {
+                    editTaskButtonsDiv.removeChild(editTaskButtonsDiv.firstChild);
+                }
+
+                const editTaskDialogAddTaskBtn = document.createElement('button');
+                editTaskDialogAddTaskBtn.setAttribute('type', 'submit');
+
+                editTaskDialogAddTaskBtn.innerText = 'Save Edits';
+                editTaskHeading.innerText = 'Edit Task';
+
+                const taskInfo = Todo.getTaskInfo(currentTaskID);
+                console.log(`title ${taskInfo[0]}`);
+                console.log(`due date ${taskInfo[1]}`);
+                console.log(`priority ${taskInfo[2]}`);
+                console.log(`notes ${taskInfo[3]}`);
+                editTaskTitleInput.value = taskInfo[0];
+                editTaskDueDate.value = taskInfo[1];
+                editTaskPriority.value = taskInfo[2];
+                editTaskNotes.value = taskInfo[3];
+
+                editTaskButtonsDiv.insertBefore(editTaskDialogAddTaskBtn, editTaskButtonsDiv.firstChild);
+                addTaskDialog.showModal();
             });
 
             taskDelete.addEventListener('click', (e) => {
