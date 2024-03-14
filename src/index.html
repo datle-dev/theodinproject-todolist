@@ -35,7 +35,7 @@
       <div id="task-board"></div>
     </main>
     <dialog id="add-task-dialog">
-      <h2>Add Task</h2>
+      <h2 id="task-dialog-heading"></h2>
       <form method="dialog" id="add-task-form">
         <div class="task-dialog-row">
           <label for="task-title">Title</label>
@@ -59,20 +59,18 @@
           <textarea name="notes" id="task-notes" maxlength="280" placeholder="Enter your notes here"></textarea>
         </div>
         <div id="task-dialog-buttons">
-          <button type="submit">Add</button>
           <button type="button" id="close-task-dialog-btn">Cancel</button>
         </div>
       </form>
     </dialog>
     <dialog id="add-project-dialog">
-      <h2>Add Project</h2>
+      <h2 id="project-dialog-heading"></h2>
       <form method="dialog" id="add-project-form">
         <div class="project-dialog-row">
           <label for="project-title">Title</label>
           <input type="text" name="project" id="project-title" minlength="1" maxlength="32" placeholder="My project" required/>
         </div>
         <div id="project-dialog-buttons">
-          <button type="submit">Add</button>
           <button type="button" id="close-project-dialog-btn">Cancel</button>
         </div>
       </form>
