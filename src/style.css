@@ -154,6 +154,20 @@ main {
     scale: 1.2;
 }
 
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.task-info > p {
+    margin: 0;
+}
+
+.task-date {
+    font-size: 0.6rem;
+}
+
 .task-actions > button:hover {
     background-color: var(--btn-hover);
 }
