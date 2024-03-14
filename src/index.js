@@ -237,6 +237,11 @@ const ScreenController = (function () {
                 Todo.addTask(title.value, dueDate.value, priority.value, notes.value);
             }
             
+            title.value = '';
+            dueDate.value = '';
+            priority.selectedIndex = 3;
+            notes.value = '';
+
             updateScreen(currentBoard, currentBoardProjectID);
             
             addTaskDialog.close();
@@ -250,6 +255,8 @@ const ScreenController = (function () {
             
             Todo.addProject(title.value);
             updateScreen(currentBoard, currentBoardProjectID);
+
+            title.value = '';
 
             addProjectDialog.close();
         }
