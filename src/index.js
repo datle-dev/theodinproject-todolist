@@ -433,9 +433,10 @@ const ScreenController = (function () {
 
 
             taskEdit.appendChild(taskEditImg);
-            if (!task.checkIsArchived() && !task.checkIsDone()) {
-                taskActionsDiv.appendChild(taskEdit);
+            if (task.checkIsArchived() || task.checkIsDone()) {
+                taskEdit.classList.add('hidden');
             }
+            taskActionsDiv.appendChild(taskEdit);
             
             taskActionsDiv.appendChild(taskArchive);
             taskActionsDiv.appendChild(taskDelete);
