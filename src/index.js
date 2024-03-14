@@ -138,6 +138,14 @@ const Todo = (function () {
         const allTasksObject = convertTaskArrayToObject(taskArray);
         StoreLocal.storeTasks(allTasksObject);
     };
+    
+    const deleteProject = (projectID) => {
+        let projectArray = [];
+        let deleteIndex = projectArray.findIndex((project) => project.getID() === projectID)
+        projectArray.splaice(deleteIndex, 1);
+        const allProjectsObject = convertProjectArrayToObject(projectArray);
+        StoreLocal.storeProjects(allProjectsObject);
+    }
 
     const toggleTaskDone = (taskID) => {
         let taskArray = getTasks();
@@ -162,6 +170,7 @@ const Todo = (function () {
         getTasks,
         getProjects,
         deleteTask,
+        deleteProject,
         toggleTaskDone,
         checkTaskInProject,
         archiveTask,
