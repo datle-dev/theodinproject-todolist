@@ -113,10 +113,27 @@ main {
     border-radius: 1rem;
 }
 
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .task-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.task-left > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: transparent;
+    border-radius: 1rem;
+    border: none;
+    transition: 0.3s;
 }
 
 .task-actions > button {
@@ -128,6 +145,10 @@ main {
     border-radius: 1rem;
     border: none;
     transition: 0.3s;
+}
+
+.task-left > button:hover {
+    scale: 1.2;
 }
 
 .task-actions > button:hover {
