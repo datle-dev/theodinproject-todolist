@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  <title>Document</title>
+<script defer src="main.js"></script></head>
+
+<body>
+  <div id="container">
+    <nav id="sidebar">
+      <h1>To-Do</h1>
+      <div id="sidebar-folders">
+        <button type="button" id="general-btn">General</button>
+        <button type="button" id="today-btn">Today</button>
+        <button type="button" id="upcoming-btn">Upcoming</button>
+        <button type="button" id="archive-btn">Archive</button>
+      </div>
+      <div id="sidebar-projects">
+        <h2>Projects</h2>
+        <button type="button" id="add-project-btn"></button>
+        <div id="project-board"></div>
+      </div>
+    </nav>
+    <main>
+      <div id="task-board-header">
+        <h2 id="current-board">General</h2>
+        <div id="project-controls"></div>
+      </div>
+      <div id="task-controls"></div>
+      <div id="task-board"></div>
+    </main>
+    <dialog id="add-task-dialog">
+      <h2 id="task-dialog-heading"></h2>
+      <form method="dialog" id="add-task-form">
+        <div class="task-dialog-row">
+          <label for="task-title">Title</label>
+          <input type="text" name="title" id="task-title" minlength="1" maxlength="32" placeholder="Enter task here" autofocus required/>
+        </div>
+        <div class="task-dialog-row">
+          <label for="task-due-date">Due Date</label>
+          <input type="date" id="task-due-date" name="due-date" required/>
+        </div>
+        <div class="task-dialog-row">
+          <label for="priority">Priority</label>
+          <select name="priority" id="task-priority" required>
+            <option value="1">Priority 1</option>
+            <option value="2">Priority 2</option>
+            <option value="3">Priority 3</option>
+            <option value="4" selected>Priority 4</option>
+          </select>
+        </div>
+        <div id="task-dialog-notes" class="task-dialog-row">
+          <label for="task-notes">Notes</label>
+          <textarea name="notes" id="task-notes" maxlength="280" placeholder="Enter your notes here"></textarea>
+        </div>
+        <div id="task-dialog-buttons">
+          <button type="button" id="close-task-dialog-btn">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="add-project-dialog">
+      <h2 id="project-dialog-heading"></h2>
+      <form method="dialog" id="add-project-form">
+        <div class="project-dialog-row">
+          <label for="project-title">Title</label>
+          <input type="text" name="project" id="project-title" minlength="1" maxlength="32" placeholder="My project" required/>
+        </div>
+        <div id="project-dialog-buttons">
+          <button type="button" id="close-project-dialog-btn">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+  <script src="./src/main.js"></script>
+</body>
+
+</html>
